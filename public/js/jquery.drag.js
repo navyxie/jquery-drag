@@ -37,6 +37,7 @@ NAVY.Drag.prototype = {
         jqObj.css({cursor:'move'});
         targetObj.css({position:'absolute',left:options.left,top:options.top});//初始化目标移动对象的left和top值
         this.initEvent();
+        return this;
     },
     initEvent:function(){
         var dragObj = this.jqObj;
@@ -78,6 +79,7 @@ NAVY.Drag.prototype = {
                     break;
             }
         });
+        return this;
     },
     /**
      * 获取目标移动对象targetObj的css的left,top,z-index值
@@ -95,6 +97,6 @@ NAVY.Drag.prototype = {
         var jqObj = this.jqObj,targetObj = this.targetObj;
         jqObj.css({cursor:'default'}).unbind();
         targetObj.css({position:'',left:'',top:''});
-        return false;
+        return this;
     }
 };
