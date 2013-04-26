@@ -7,17 +7,22 @@
  */
 var NAVY = NAVY || {};
 NAVY.Drag = function(self, targetObj,options){
-    self = $(self);
-    targetObj =$(targetObj);
+    if(self === targetObj){
+        self = targetObj = $(self);
+    }else{
+        self = $(self);
+        targetObj =$(targetObj);
+    }
     var dragObj = this;
     var defaults = {
         left:0,//初始化移动对象targetObj的left值
         top:0,//初始化移动对象targetObj的top值
-        limitObj:document,//限制移动对象移动的父对象，默认是document
+        limitObj:targetObj.offsetParent(),//限制移动对象移动的父对象，默认是document
         isMoveSpace:{
             x:3,//x方向上移动的步长
             y:3//y方向上移动的步长
-        }
+        },
+        isClearMargin:true
     };
     dragObj.jqObj = self;
     dragObj.targetObj = targetObj;
@@ -27,6 +32,14 @@ NAVY.Drag = function(self, targetObj,options){
         x:limitObj.outerWidth()-targetObj.outerWidth(),//x方向上最大的移动距离
         y:limitObj.outerHeight() - targetObj.outerHeight()//y方向上最大的移动距离
     };
+    if(dragObj.opts.isClearMargin){
+        dragObj.targetObj.css('margin','0')
+    }else{
+        var marginLeft = targetObj.css('marginLeft'),marginRight = targetObj.css('marginRight'),marginTop = targetObj.css('marginTop'),marginBottom = targetObj.css('marginBottom');
+        console.log('1:'+marginLeft+'2:'+marginRight+'3:'+marginTop+'4:'+marginBottom);
+        dragObj.maxMove.x = limitObj.outerWidth()-targetObj.outerWidth() - parseInt(marginRight) - parseInt(marginLeft);
+        dragObj.maxMove.y = limitObj.outerHeight() - targetObj.outerHeight() - parseInt(marginTop) - parseInt(marginBottom);
+    }
     dragObj.init();//初始化
 };
 NAVY.Drag.prototype = {
@@ -47,7 +60,7 @@ NAVY.Drag.prototype = {
         var isDrag = false;//判断当前鼠标是否按下
         var startPage = {x:0,y:0};//记录开始的pageX和pageY值
         var startPos = {left:options.left,top:options.top};//记录目标移动对象targetObj的left和top值
-        $('body').find(targetObj).find(dragObj).mousedown(function(e){
+        $('body').find(dragObj).mousedown(function(e){
             isDrag = true;
             startPage.x = e.pageX;
             startPage.y = e.pageY;
