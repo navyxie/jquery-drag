@@ -7,40 +7,35 @@
  */
 var NAVY = NAVY || {};
 NAVY.Drag = function(self, targetObj,options){
+    this.orignSelf = self;
+    this.orignTarget = targetObj;
     if(self === targetObj){
         self = targetObj = $(self);
     }else{
         self = $(self);
         targetObj =$(targetObj);
     }
-    var dragObj = this;
     var defaults = {
         left:0,//初始化移动对象targetObj的left值
         top:0,//初始化移动对象targetObj的top值
-        limitObj:targetObj.offsetParent(),//限制移动对象移动的父对象，默认是document
+        limitObj:targetObj.offsetParent() || 'body',//限制移动对象移动的父对象，默认是document
         isMoveSpace:{
             x:3,//x方向上移动的步长
             y:3//y方向上移动的步长
         },
         isClearMargin:true
     };
-    dragObj.jqObj = self;
-    dragObj.targetObj = targetObj;
-    dragObj.opts = $.extend(defaults, options);
-    var limitObj = $(dragObj.opts.limitObj);
-    dragObj.maxMove = {
-        x:limitObj.outerWidth()-targetObj.outerWidth(),//x方向上最大的移动距离
-        y:limitObj.outerHeight() - targetObj.outerHeight()//y方向上最大的移动距离
-    };
-    if(dragObj.opts.isClearMargin){
-        dragObj.targetObj.css('margin','0')
-    }else{
-        var marginLeft = targetObj.css('marginLeft'),marginRight = targetObj.css('marginRight'),marginTop = targetObj.css('marginTop'),marginBottom = targetObj.css('marginBottom');
-        console.log('1:'+marginLeft+'2:'+marginRight+'3:'+marginTop+'4:'+marginBottom);
-        dragObj.maxMove.x = limitObj.outerWidth()-targetObj.outerWidth() - parseInt(marginRight) - parseInt(marginLeft);
-        dragObj.maxMove.y = limitObj.outerHeight() - targetObj.outerHeight() - parseInt(marginTop) - parseInt(marginBottom);
-    }
-    dragObj.init();//初始化
+    this.jqObj = self;
+    this.targetObj = targetObj;
+    this.opts = $.extend(defaults, options);
+    var limitObj = $(this.opts.limitObj);
+    this.limitObjWidth = limitObj.outerWidth();
+    this.limitObjHeight = limitObj.outerHeight();
+    if(this.opts.isClearMargin){
+        this.targetObj.css('margin','0')
+    }   
+    this.setMaxvalue();
+    this.init();//初始化
 };
 NAVY.Drag.prototype = {
     init:function(){
@@ -53,15 +48,23 @@ NAVY.Drag.prototype = {
         return this;
     },
     initEvent:function(){
+        var _this = this;
         var dragObj = this.jqObj;
         var targetObj = this.targetObj;
         var options = this.opts;
-        var maxMoveX = this.maxMove.x,maxMoveY = this.maxMove.y;//x和y方向最大可移动的距离
+        var maxMoveX , maxMoveY;//x和y方向最大可移动的距离
         var isDrag = false;//判断当前鼠标是否按下
         var startPage = {x:0,y:0};//记录开始的pageX和pageY值
         var startPos = {left:options.left,top:options.top};//记录目标移动对象targetObj的left和top值
-        $('body').find(dragObj).mousedown(function(e){
+        options.limitObj.find(_this.orignSelf).mousedown(function(e){
             isDrag = true;
+            if(_this.orignSelf === _this.orignTarget){
+                targetObj = $(this);
+            }else{
+                targetObj = $(this).closest(_this.orignTarget);
+            }
+            _this.setMaxvalue(targetObj);
+            maxMoveX = _this.maxMove.x,maxMoveY = _this.maxMove.y;
             startPage.x = e.pageX;
             startPage.y = e.pageY;
             startPos.left = targetObj.position().left;
@@ -106,10 +109,23 @@ NAVY.Drag.prototype = {
      * 取消绑定移动对象
      * @return {Boolean}
      */
-    unDrag:function(){
-        var jqObj = this.jqObj,targetObj = this.targetObj;
+    unDrag:function(jqObj,targetObj){
+        jqObj = jqObj || this.jqObj,targetObj = targetObj || this.targetObj;
         jqObj.css({cursor:'default'}).unbind();
         targetObj.css({position:'',left:'',top:''});
         return this;
+    },
+    setMaxvalue:function(targetObj){
+        var opts = this.opts;
+        targetObj = targetObj || this.targetObj;
+        this.maxMove = {
+            x:this.limitObjWidth - targetObj.outerWidth(),//x方向上最大的移动距离
+            y:this.limitObjHeight - targetObj.outerHeight()//y方向上最大的移动距离
+        };
+        if(!opts.isClearMargin){
+            var marginLeft = targetObj.css('marginLeft'),marginRight = targetObj.css('marginRight'),marginTop = targetObj.css('marginTop'),marginBottom = targetObj.css('marginBottom');
+            this.maxMove.x = this.limitObjWidth-targetObj.outerWidth() - parseInt(marginRight) - parseInt(marginLeft);
+            this.maxMove.y = this.limitObjHeight - targetObj.outerHeight() - parseInt(marginTop) - parseInt(marginBottom);
+        }
     }
 };
