@@ -55,13 +55,16 @@ NAVY.Drag.prototype = {
         var isDrag = false;//判断当前鼠标是否按下
         var startPage = {x:0,y:0};//记录开始的pageX和pageY值
         var startPos = {left:options.left,top:options.top};//记录目标移动对象targetObj的left和top值
-        options.limitObj.find(_this.orignSelf).mousedown(function(e){
+        var limitObj = options.limitObj;
+        limitObj.find(_this.orignSelf).mousedown(function(e){
             isDrag = true;
             if(_this.orignSelf === _this.orignTarget){
                 targetObj = $(this);
             }else{
                 targetObj = $(this).closest(_this.orignTarget);
             }
+            _this.limitObjWidth = limitObj.outerWidth();
+            _this.limitObjHeight = limitObj.outerHeight();
             _this.setMaxvalue(targetObj);
             maxMoveX = _this.maxMove.x ;
             maxMoveY = _this.maxMove.y;
