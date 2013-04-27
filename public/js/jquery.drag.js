@@ -64,7 +64,8 @@ NAVY.Drag.prototype = {
                 targetObj = $(this).closest(_this.orignTarget);
             }
             _this.setMaxvalue(targetObj);
-            maxMoveX = _this.maxMove.x,maxMoveY = _this.maxMove.y;
+            maxMoveX = _this.maxMove.x ;
+            maxMoveY = _this.maxMove.y;
             startPage.x = e.pageX;
             startPage.y = e.pageY;
             startPos.left = targetObj.position().left;
@@ -110,7 +111,8 @@ NAVY.Drag.prototype = {
      * @return {Boolean}
      */
     unDrag:function(jqObj,targetObj){
-        jqObj = jqObj || this.jqObj,targetObj = targetObj || this.targetObj;
+        jqObj = jqObj || this.jqObj;
+        targetObj = targetObj || this.targetObj;
         jqObj.css({cursor:'default'}).unbind();
         targetObj.css({position:'',left:'',top:''});
         return this;
@@ -127,5 +129,11 @@ NAVY.Drag.prototype = {
             this.maxMove.x = this.limitObjWidth-targetObj.outerWidth() - parseInt(marginRight) - parseInt(marginLeft);
             this.maxMove.y = this.limitObjHeight - targetObj.outerHeight() - parseInt(marginTop) - parseInt(marginBottom);
         }
+    },
+    setCursorDefault:function(){
+        this.jqObj.css({cursor:'default'});
+    },
+    setCursorMove:function(){
+        this.jqObj.css({cursor:'move'});
     }
 };
