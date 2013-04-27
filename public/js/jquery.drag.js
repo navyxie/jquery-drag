@@ -4,11 +4,13 @@
  * email:navyxie2010@gmail.com
  * qq:951178609
  * version:1.0 beta
+ * 当容器内有多个拖动对象时，最好给每个拖动对象设置一个，通过id实例化拖动对象
  */
 var NAVY = NAVY || {};
 NAVY.Drag = function(self, targetObj,options){
-    this.orignSelf = self;
-    this.orignTarget = targetObj;
+    this.orignSelf = self;//记录传进来的拖动对象id或者class
+    this.orignTarget = targetObj;//记录传进来的目标对象的id或者class
+    //当拖动对象和目标对象相同时的处理
     if(self === targetObj){
         self = targetObj = $(self);
     }else{
@@ -119,6 +121,10 @@ NAVY.Drag.prototype = {
         targetObj.css({position:'',left:'',top:''});
         return this;
     },
+    /**
+     * 设置水平方向和垂直方向上最大的移动值
+     * @param targetObj
+     */
     setMaxvalue:function(targetObj){
         var opts = this.opts;
         targetObj = targetObj || this.targetObj;
@@ -132,9 +138,15 @@ NAVY.Drag.prototype = {
             this.maxMove.y = this.limitObjHeight - targetObj.outerHeight() - parseInt(marginTop) - parseInt(marginBottom);
         }
     },
+    /**
+     * 设置拖动对象的鼠标样式为默认值
+     */
     setCursorDefault:function(){
         this.jqObj.css({cursor:'default'});
     },
+    /**
+     * 设置拖动对象的鼠标样式为移动手型
+     */
     setCursorMove:function(){
         this.jqObj.css({cursor:'move'});
     }
