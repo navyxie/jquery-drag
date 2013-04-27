@@ -49,7 +49,6 @@ NAVY.Drag.prototype = {
     },
     initEvent:function(){
         var _this = this;
-        var dragObj = this.jqObj;
         var targetObj = this.targetObj;
         var options = this.opts;
         var maxMoveX , maxMoveY;//x和y方向最大可移动的距离
